@@ -18,7 +18,6 @@ from .mixins import FormUserNeededMixin, UserOwnerMixin
 class TweetCreateView(FormUserNeededMixin, CreateView):
     form_class = TweetModelForm
     template_name = 'tweets/create_view.html'
-    # success_url = reverse_lazy("tweet:detail")
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -29,13 +28,12 @@ class TweetUpdateView(LoginRequiredMixin, UserOwnerMixin, UpdateView):
     queryset = Tweet.objects.all()
     form_class = TweetModelForm
     template_name = 'tweets/update_view.html'
-    # success_url = "/tweet/"
 
 
 class TweetDeleteView(LoginRequiredMixin, DeleteView):
     model = Tweet
     template_name = 'tweets/delete_confirm.html'
-    success_url = reverse_lazy("tweet:list") #reverse()
+    success_url = reverse_lazy("tweet:list")
 
 
 class TweetDetailView(DetailView):
@@ -47,7 +45,6 @@ class TweetListView(ListView):
 
     def get_queryset(self, *args, **kwargs):
         qs = Tweet.objects.all()
-        print(self.request.GET)
         query = self.request.GET.get("q", None)
         if query is not None:
             qs = qs.filter(
@@ -63,7 +60,6 @@ class TweetListView(ListView):
 
 def tweet_detail_view(request, pk=None): # pk == id
     obj = get_object_or_404(Tweet, pk=pk)
-    print(obj)
     context = {
         "object": obj
     }
