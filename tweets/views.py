@@ -56,11 +56,3 @@ class TweetListView(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super(TweetListView, self).get_context_data(*args, **kwargs)
         return context
-
-
-def tweet_detail_view(request, pk=None): # pk == id
-    obj = get_object_or_404(Tweet, pk=pk)
-    context = {
-        "object": obj
-    }
-    return render(request, "tweets/detail_view.html", context)
