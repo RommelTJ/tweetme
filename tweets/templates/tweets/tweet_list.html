@@ -23,6 +23,7 @@
         $(document).ready(function(){
             var query = getParameterByName('q');
             var tweetList = [];
+            var nextTweetUrl;
 
             function attachTweet(tweetValue, prepend){
                 var dateDisplay = tweetValue.date_display;
@@ -48,15 +49,26 @@
                 }
             }
 
-            function fetchTweets() {
+            function fetchTweets(url) {
+                var fetchUrl;
+                if (!url) {
+                    fetchUrl = "/api/tweet/";
+                } else {
+                    fetchUrl = url;
+                }
                 $.ajax({
-                    url: "/api/tweet/",
+                    url: fetchUrl,
                     data: {
                         "q": query
                     },
                     method: "GET",
                     success: function (data) {
-                        tweetList = data;
+                        tweetList = data.results;
+                        if (data.next) {
+                            nextTweetUrl = data.next;
+                        } else {
+                            $("#loadmore").css("display", "none");
+                        }
                         parseTweets()
 
                     },
@@ -68,6 +80,14 @@
             }
 
             fetchTweets();
+
+            $("#loadmore").click(function(event) {
+                event.preventDefault();
+                if (nextTweetUrl) {
+                    fetchTweets(nextTweetUrl);
+                }
+                // load more items.
+            });
 
             var charsStart = 140;
             var charsCurrent = 0;
@@ -137,8 +157,8 @@
                 <hr/>
             {% endif %}
 
-            <div id='tweet-container'>
-            </div>
+            <div id='tweet-container'></div>
+            <a href='#' id='loadmore'>Load More Tweets</a>
 
         </div>
     </div>
