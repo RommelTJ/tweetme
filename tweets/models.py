@@ -1,4 +1,7 @@
+import re
+
 from django.db import models
+from django.db.models.signals import post_save
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
@@ -48,3 +51,16 @@ class Tweet(models.Model):
 
     class Meta:
         ordering = ['-timestamp']
+
+
+def tweet_save_receiver(sender, instance, created, *args, **kwargs):
+    if created and not instance.parent:
+        # notify a user
+        user_regex = r'@(?P<username>[\w.@+-]+)'
+        usernames = re.findall(user_regex, instance.content)
+        # send notification to user here.
+        hash_regex = r'#(?P<hashtag>[\w\d-]+)'
+        hashtags = re.findall(hash_regex, instance.content)
+        # send hashtag signal to user here.
+
+post_save.connect(tweet_save_receiver, sender=Tweet)
