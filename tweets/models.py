@@ -35,6 +35,7 @@ class TweetManager(models.Manager):
         obj.save()
         return obj
 
+
 class Tweet(models.Model):
     parent = models.ForeignKey("self", blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
