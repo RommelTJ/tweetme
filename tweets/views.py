@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import (
@@ -12,9 +12,9 @@ from django.views.generic import (
     UpdateView
 )
 
-from .models import Tweet
 from .forms import TweetModelForm
 from .mixins import FormUserNeededMixin, UserOwnerMixin
+from .models import Tweet
 
 
 class RetweetView(View):
@@ -51,7 +51,7 @@ class TweetDetailView(DetailView):
     queryset = Tweet.objects.all()
 
 
-class TweetListView(ListView):
+class TweetListView(LoginRequiredMixin, ListView):
     def get_queryset(self, *args, **kwargs):
         qs = Tweet.objects.all()
         query = self.request.GET.get("q", None)
